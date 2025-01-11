@@ -11,9 +11,43 @@ const redisService = require('../services/redisService');
 async function createCourse(req, res) {
   // TODO: Implémenter la création d'un cours
   // Utiliser les services pour la logique réutilisable
+  try {
+    const courseData = req.body;
+    const result = await mongoService.createCourse(courseData);
+    await redisService.cacheCourse(result.insertedId, courseData);
+    res.status(201).json({ message: 'Course created successfully', courseId: result.insertedId });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating course', error });
+  }
 }
+
+async function getCourse(req, res) {
+  try {
+    const courseId = req.params.id;
+    const course = await mongoService.getCourseById(courseId);
+    if (!course) {
+      return res.status(404).json({ message: 'Course not found' });
+    }
+    res.status(200).json(course);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving course', error });
+  }
+}
+
+async function getCourseStats(req, res) {
+  try {
+    const stats = await mongoService.getCourseStats();
+    res.status(200).json(stats);
+  } catch (error) {
+    res.status(500).json({ message: 'Error retrieving course stats', error });
+  }
+}
+
 
 // Export des contrôleurs
 module.exports = {
   // TODO: Exporter les fonctions du contrôleur
+  createCourse,
+  getCourse,
+  getCourseStats,
 };
