@@ -12,14 +12,39 @@ let mongoClient, redisClient, db;
 async function connectMongo() {
   // TODO: Implémenter la connexion MongoDB
   // Gérer les erreurs et les retries
+  try {
+    mongoClient = new MongoClient(config.mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
+    await mongoClient.connect();
+    db = mongoClient.db(config.mongoDbName);
+    console.log('Connected to MongoDB');
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+    setTimeout(connectMongo, 5000);
+  }
 }
 
 async function connectRedis() {
   // TODO: Implémenter la connexion Redis
   // Gérer les erreurs et les retries
+  try {
+    redisClient = redis.createClient({ url: config.redisUri });
+    redisClient.on('error', (err) => {
+      console.error('Redis Client Error', err);
+    });
+    await redisClient.connect();
+    console.log('Connected to Redis');
+  } catch (error) {
+    console.error('Error connecting to Redis:', error);
+    setTimeout(connectRedis, 5000);
+  }
 }
 
 // Export des fonctions et clients
 module.exports = {
   // TODO: Exporter les clients et fonctions utiles
+  connectMongo,
+  connectRedis,
+  getMongoClient: () => mongoClient,
+  getRedisClient: () => redisClient,
+  getDb: () => db,
 };
