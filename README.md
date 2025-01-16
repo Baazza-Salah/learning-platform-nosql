@@ -95,7 +95,9 @@ Réponse : Utiliser des variables d'environnement permet de séparer la configur
 ![IMG](./screens/1.jpeg)
 
 3. Afficher un cours :
+   
 ![IMG](./screens/2.jpeg)
 
-4. Afficher l'etat des cours
+5. Afficher l'etat des cours
+   
 ![IMG](./screens/3.jpeg)
