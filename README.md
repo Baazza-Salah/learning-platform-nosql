@@ -91,10 +91,11 @@ Réponse : Utiliser des variables d'environnement permet de séparer la configur
 
 ### Utilisation de l'API
 1. Ajouter un cours :
+
 ![IMG](./screens/1.jpeg)
 
-2. Afficher un cours :
+3. Afficher un cours :
 ![IMG](./screens/2.jpeg)
 
-3. Afficher l'etat des cours
+4. Afficher l'etat des cours
 ![IMG](./screens/3.jpeg)
