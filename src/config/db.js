@@ -12,6 +12,11 @@ let mongoClient, redisClient, db;
 async function connectMongo() {
   // TODO: Implémenter la connexion MongoDB
   // Gérer les erreurs et les retries
+  if (!config.mongodb.uri) {
+    console.error("MongoDB URI is not defined in the configuration.");
+    return;
+  }
+  
   try {
     mongoClient = new MongoClient(config.mongoUri, { useNewUrlParser: true, useUnifiedTopology: true });
     await mongoClient.connect();

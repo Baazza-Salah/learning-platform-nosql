@@ -6,6 +6,7 @@
 const express = require('express');
 const config = require('./config/env');
 const db = require('./config/db');
+require('dotenv').config();
 
 const courseRoutes = require('./routes/courseRoutes');
 

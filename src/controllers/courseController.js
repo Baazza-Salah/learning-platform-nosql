@@ -13,33 +13,62 @@ async function createCourse(req, res) {
   // Utiliser les services pour la logique réutilisable
   try {
     const courseData = req.body;
+    const collection = db.getDb().collection("courses");
     const result = await mongoService.createCourse(courseData);
-    await redisService.cacheCourse(result.insertedId, courseData);
-    res.status(201).json({ message: 'Course created successfully', courseId: result.insertedId });
+    const insertedId = result.insertedId.toString(); 
+    await redisService.cacheData(insertedId, courseData, 3600);
+    res.status(201).json({
+      message: "Course created successfully",
+      courseId: insertedId,
+    });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating course', error });
+    console.error("Error creating course:", error);
+    res.status(500).json({
+      message: "Error creating course",
+      error: error.message || error,
+    });
   }
 }
+
 
 async function getCourse(req, res) {
   try {
     const courseId = req.params.id;
-    const course = await mongoService.getCourseById(courseId);
+    const collection = db.getDb().collection("courses");
+    const course = await mongoService.findOneById(collection, courseId);
     if (!course) {
-      return res.status(404).json({ message: 'Course not found' });
+      return res.status(404).json({ message: "Course not found" });
     }
     res.status(200).json(course);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving course', error });
+    console.error("Error retrieving course:", error);
+    res.status(500).json({
+      message: "Error retrieving course",
+      error: error.message || error,
+    });
   }
 }
 
 async function getCourseStats(req, res) {
   try {
-    const stats = await mongoService.getCourseStats();
-    res.status(200).json(stats);
+    const collection = db.getDb().collection("courses");
+    const stats = await collection
+      .aggregate([
+        {
+          $group: {
+            _id: null,
+            totalCourses: { $sum: 1 },
+          },
+        },
+      ])
+      .toArray();
+    res.status(200).json(stats[0]);
   } catch (error) {
-    res.status(500).json({ message: 'Error retrieving course stats', error });
+    console.error("Error retrieving course stats:", error);
+    res.status(500).json({
+      message: "Error retrieving course stats",
+      error: error.message || error,
+    });
   }
 }
 
